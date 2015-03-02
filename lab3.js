@@ -64,14 +64,13 @@ window.onload = function init()
     
     gl.enable(gl.DEPTH_TEST);
 
-    //
-    //  Load shaders and initialize attribute buffers
-    //
+//load shaders
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
 	
     colorCube();
-	
+
+//normals	
 	var nBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
@@ -80,6 +79,7 @@ window.onload = function init()
     gl.vertexAttribPointer( vNormal, 3, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vNormal );
 
+//pos
     var vBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW )
@@ -89,7 +89,7 @@ window.onload = function init()
     gl.enableVertexAttribArray( vPosition );
 
     thetaLoc = gl.getUniformLocation(program, "theta"); 
-    
+//projection/camera    
 	viewerPos = vec3(0.0, 0.0, 0.0 );
 
     projection = ortho(-1, 1, -1, 1, -100, 100);
@@ -125,6 +125,7 @@ window.onload = function init()
 		}
 	};
 
+//prep lighting
     gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
        flatten(ambientProduct));
     gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
@@ -166,31 +167,21 @@ function quad(a, b, c, d)
         [-0.2,  0.2, 	-0.2, 	1.0 ], //5 
         [0.2,	0.2, 	-0.2, 	1.0 ], //6 
         [0.2,	-0.2, 	-0.2, 	1.0 ], //7
-		[0, 	1.0, 	0, 		1.0 ], //8 
-		[0, 	-1.0, 	0, 		1.0 ], //9
-		[1.0, 	0, 		0, 		1.0 ], //10
-		[-1.0, 0, 		0, 		1.0 ], //11
-		[0,		0,		1.0,	1.0 ], //12
-		[0,		0,		-1.0,	1.0 ]  //13
+	[0, 	1.0, 	0, 		1.0 ], //8 
+	[0, 	-1.0, 	0, 		1.0 ], //9
+	[1.0, 	0, 		0, 		1.0 ], //10
+	[-1.0, 0, 		0, 		1.0 ], //11
+	[0,		0,		1.0,	1.0 ], //12
+	[0,		0,		-1.0,	1.0 ]  //13
     ];
-/*
-    var vc = new Array(8);
-    for(var i = 0; i<8; i++) vc[i] = new Float32Array(8);
-    vc[0]  =  [ 0.0, 0.0, 0.0, 1.0 ];
-	*/
 
-    // We need to parition the quad into two triangles in order for
-    // WebGL to be able to render it.  In this case, we create two
-    // triangles from the quad indices
-    
-    //vertex color assigned by the index of the vertex
-    
+//calculate normals    
     var t1 = subtract(vertices[b], vertices[a]);
      var t2 = subtract(vertices[c], vertices[b]);
      var normal = cross(t1, t2);
      var normal = vec3(normal);
 
-
+//add each plane and normal to corresponding matrices
      points.push(vertices[a]); 
      normalsArray.push(normal); 
      points.push(vertices[b]); 
@@ -202,27 +193,19 @@ function quad(a, b, c, d)
      points.push(vertices[c]); 
      normalsArray.push(normal); 
      points.push(vertices[d]); 
-     normalsArray.push(normal);    
-	/*
-    for ( var i = 0; i < indices1.length; ++i ) {
-        points.push( vertices[indices1[i]] );
-        //colors.push( vertexColors[indices[i]] );
-    
-        // for solid colored faces use 
-        colors.push([ 0.5, 0.8, 1.0, 1.0 ]);
-        
-    }
-	*/
+     normalsArray.push(normal); 
 }
 
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+    //if pause button is not pressed, rotate by 2*m degrees (m= +1 || -1 depending on key)
     if(flag) theta[axis] += 2.0*m;
     gl.uniform3fv(thetaLoc, theta);
     
-	modelView = mat4();
+    //apply rotation matrices
+    modelView = mat4();
     modelView = mult(modelView, rotate(theta[xAxis], [1, 0, 0] ));
     modelView = mult(modelView, rotate(theta[yAxis], [0, 1, 0] ));
     modelView = mult(modelView, rotate(theta[zAxis], [0, 0, 1] ));
