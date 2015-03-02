@@ -7,10 +7,10 @@
 *
 *	lab3.js:
 *	- creates 16 faced 3-D star object initially set to rotate 15 deg. on x axis
-*   - simple lighting and shading, blue with gold luster
-*   - user arrow keys to rotate object forward/backward on x and y axes
-*   - click on button to pause/play rotation
-*   - I tried making sure the normals are all facing the right direction, 
+*   	- simple lighting and shading, blue with gold luster
+*   	- user arrow keys to rotate object forward/backward on x and y axes
+*   	- click on button to pause/play rotation
+*   	- I tried making sure the normals are all facing the right direction, 
 *         but it still seems like a few faces are flipped. Maybe it's
 *         just me.
 *	
